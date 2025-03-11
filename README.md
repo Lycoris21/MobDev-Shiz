@@ -1,3 +1,3 @@
 # MobDev-Shiz
 
-### This repo would hold all my CIS 2203N Mobile Development Course Activities
+### This repo will hold all my CIS 2203N Mobile Development Course Activities
