@@ -20,12 +20,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
         backButton = findViewById(R.id.back);
         backButton.setOnClickListener(v -> onBackPressed());
 
-        // Load the CategorySelectionFragment by default
         if (savedInstanceState == null) {
-            String category = getIntent().getStringExtra("category"); // Retrieve the category from the intent
+            String category = getIntent().getStringExtra("category");
             CategorySelectionFragment categorySelectionFragment = new CategorySelectionFragment();
             Bundle args = new Bundle();
-            args.putString("category", category); // Pass the category to the fragment
+            args.putString("category", category);
             categorySelectionFragment.setArguments(args);
             loadFragment(categorySelectionFragment);
         }
@@ -34,7 +33,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null); // Add to back stack
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -42,9 +41,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack(); // Pop the last fragment
+            fragmentManager.popBackStack();
         } else {
-            // If there are no fragments in the back stack, finish the activity
             super.onBackPressed();
         }
     }

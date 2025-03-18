@@ -3,7 +3,7 @@ package com.ph.edu.usc.dejito_midterm;
 public class Category {
     private String name;
     private String description;
-    private int imageResource; // Resource ID for the category image
+    private int imageResource;
 
     public Category(String name, String description, int imageResource) {
         this.name = name;

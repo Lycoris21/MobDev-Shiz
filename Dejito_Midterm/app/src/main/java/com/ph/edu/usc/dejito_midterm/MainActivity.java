@@ -22,24 +22,21 @@ public class MainActivity extends AppCompatActivity {
     private CategoryAdapter categoryAdapter;
     private CleanerAdapter cleanerAdapter;
 
-    private List<Cleaner> allCleaners; // List of all cleaners
-    private List<Cleaner> filteredCleaners; // List of filtered cleaners
+    private List<Cleaner> allCleaners;
+    private List<Cleaner> filteredCleaners;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize views
         recyclerViewCategories = findViewById(R.id.categories);
         recyclerViewTopCleaners = findViewById(R.id.topCleaners);
         searchEditText = findViewById(R.id.search);
         LinearLayout moreCategories = findViewById(R.id.more);
 
-        // Initialize the list of cleaners
         initializeCleaners();
 
-        // Set up RecyclerView for categories
         recyclerViewCategories.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         List<Category> categoryList = new ArrayList<>();
         categoryList.add(new Category("Cleaning Service", "Professional cleaning services for your home.", R.drawable.cleaning));
@@ -48,27 +45,31 @@ public class MainActivity extends AppCompatActivity {
 
         categoryAdapter = new CategoryAdapter(categoryList, category -> {
             Intent intent = new Intent(MainActivity.this, CategorySelectionActivity.class);
-            intent.putExtra("category", category.getName()); // Pass the category name
+            intent.putExtra("category", category.getName());
             startActivity(intent);
         });
         recyclerViewCategories.setAdapter(categoryAdapter);
 
-        // Set up RecyclerView for top cleaners
         recyclerViewTopCleaners.setLayoutManager(new LinearLayoutManager(this));
         cleanerAdapter = new CleanerAdapter(allCleaners, cleaner -> {
             Intent intent = new Intent(MainActivity.this, CleanerProfileActivity.class);
-            // Pass the cleaner's details to the CleanerProfileActivity
             intent.putExtra("cleaner_name", cleaner.getName());
+            intent.putExtra("cleaner_age", cleaner.getAge());
             intent.putExtra("cleaner_gender", cleaner.getGender());
             intent.putExtra("cleaner_details", cleaner.getDetails());
+            intent.putExtra("cleaner_sched", cleaner.getSchedule());
+            intent.putExtra("cleaner_address", cleaner.getAddress());
+            intent.putExtra("cleaner_number", cleaner.getNumber());
             intent.putExtra("cleaner_rating", cleaner.getRating());
             intent.putExtra("cleaner_image", cleaner.getImageResource());
-            intent.putStringArrayListExtra("cleaner_services", new ArrayList<>(cleaner.getCategory())); // Pass the services
+            intent.putExtra("cleaner_clean", cleaner.getCleanRate());
+            intent.putExtra("cleaner_attitude", cleaner.getAttitudeRate());
+            intent.putExtra("cleaner_satisfaction", cleaner.getSatisfactionRate());
+            intent.putStringArrayListExtra("cleaner_services", new ArrayList<>(cleaner.getCategory()));
             startActivity(intent);
         });
         recyclerViewTopCleaners.setAdapter(cleanerAdapter);
 
-        // Set up search functionality
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -82,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // Handle "More" button click
         moreCategories.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CategorySelectionActivity.class);
             startActivity(intent);
@@ -108,11 +108,15 @@ public class MainActivity extends AppCompatActivity {
         List<String> services4 = new ArrayList<>();
         services4.add("Babysitter");
 
-        allCleaners.add(new Cleaner("Cleaner 1", "Female", "Experienced in house cleaning", 4.5f, R.drawable.jingliu, services1));
-        allCleaners.add(new Cleaner("Cleaner 2", "Male", "Specializes in garden maintenance", 4.0f, R.drawable.jingliu, services2));
-        allCleaners.add(new Cleaner("Cleaner 3", "Female", "Expert plumber with 10 years of experience", 5.0f, R.drawable.jingliu, services3));
-        allCleaners.add(new Cleaner("Cleaner 4", "Male", "Certified babysitter", 4.8f, R.drawable.jingliu, services4));
-        // Add more cleaners as needed
+        allCleaners.add(new Cleaner("Cleaner 1", 18,"Female", "Experienced in house cleaning", "Weekends","Mandaue","09123456789",4.5f, R.drawable.jingliu, services1, 40, 60, 50));
+        allCleaners.add(new Cleaner("Cleaner 2", 24,"Male", "Specializes in garden maintenance", "Weekdays","Cabancalan","09123456789",4.0f, R.drawable.jingliu, services2, 56, 64, 59));
+        allCleaners.add(new Cleaner("Cleaner 3", 35,"Female", "Expert plumber with 10 years of experience", "Mon-Fri", "Talamban","09123456789",5.0f, R.drawable.jingliu, services3, 89, 76, 83));
+        allCleaners.add(new Cleaner("Cleaner 4", 28,"Male", "Certified babysitter", "MWF", "Guadalupe","09123456789",4.8f, R.drawable.jingliu, services4, 96, 67, 89));
+        allCleaners.add(new Cleaner("Cleaner 5", 30,"Male", "Certified babysitter", "TTH" , "Mabolo","09123456789",4.8f, R.drawable.jingliu, services4, 23, 34, 27));
+        allCleaners.add(new Cleaner("Cleaner 6", 21,"Male", "Certified babysitter","Mondays" , "Maguikay","09123456789",4.8f, R.drawable.jingliu, services4, 67, 45, 56));
+        allCleaners.add(new Cleaner("Cleaner 7", 43,"Male", "Certified babysitter", "Sundays", "SRP","09123456789",4.8f, R.drawable.jingliu, services4, 60, 50, 55));
+
+        allCleaners.sort((c1, c2) -> Float.compare(c2.getRating(), c1.getRating()));
     }
 
     private void filterCleaners(String query) {

@@ -22,29 +22,33 @@ public class CleanerListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cleaner_list, container, false);
 
         RecyclerView cleanerListView = view.findViewById(R.id.cleanerList);
-        cleanerListView.setLayoutManager(new LinearLayoutManager(getContext())); // Set the layout manager
+        cleanerListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        initializeCleaners(); // Initialize the list of cleaners
+        initializeCleaners();
 
-        // Get the selected category from arguments
         String selectedCategory = getArguments().getString("category");
 
-        // Filter the cleaners based on the selected category
         filteredCleaners = filterCleanersByCategory(selectedCategory);
 
-        // Create the adapter and set it to the RecyclerView
         CleanerAdapter adapter = new CleanerAdapter(filteredCleaners, cleaner -> {
             Intent intent = new Intent(getActivity(), CleanerProfileActivity.class);
             intent.putExtra("cleaner_name", cleaner.getName());
+            intent.putExtra("cleaner_age", cleaner.getAge());
             intent.putExtra("cleaner_gender", cleaner.getGender());
             intent.putExtra("cleaner_details", cleaner.getDetails());
+            intent.putExtra("cleaner_sched", cleaner.getSchedule());
+            intent.putExtra("cleaner_address", cleaner.getAddress());
+            intent.putExtra("cleaner_number", cleaner.getNumber());
             intent.putExtra("cleaner_rating", cleaner.getRating());
             intent.putExtra("cleaner_image", cleaner.getImageResource());
+            intent.putExtra("cleaner_clean", cleaner.getCleanRate());
+            intent.putExtra("cleaner_attitude", cleaner.getAttitudeRate());
+            intent.putExtra("cleaner_satisfaction", cleaner.getSatisfactionRate());
             intent.putStringArrayListExtra("cleaner_services", new ArrayList<>(cleaner.getCategory()));
             startActivity(intent);
         });
         Log.d("CleanerListFragment", "Filtered cleaners count: " + filteredCleaners.size());
-        cleanerListView.setAdapter(adapter); // Set the adapter
+        cleanerListView.setAdapter(adapter);
 
         return view;
     }
@@ -68,11 +72,15 @@ public class CleanerListFragment extends Fragment {
         List<String> services4 = new ArrayList<>();
         services4.add("Babysitter");
 
-        allCleaners.add(new Cleaner("Cleaner 1", "Female", "Experienced in house cleaning", 4.5f, R.drawable.jingliu, services1));
-        allCleaners.add(new Cleaner("Cleaner 2", "Male", "Specializes in garden maintenance", 4.0f, R.drawable.jingliu, services2));
-        allCleaners.add(new Cleaner("Cleaner 3", "Female", "Expert plumber with 10 years of experience", 5.0f, R.drawable.jingliu, services3));
-        allCleaners.add(new Cleaner("Cleaner 4", "Male", "Certified babysitter", 4.8f, R.drawable.jingliu, services4));
-        // Add more cleaners as needed
+        allCleaners.add(new Cleaner("Cleaner 1", 18,"Female", "Experienced in house cleaning", "Weekends","Mandaue","09123456789",4.5f, R.drawable.jingliu, services1, 40, 60, 50));
+        allCleaners.add(new Cleaner("Cleaner 2", 24,"Male", "Specializes in garden maintenance", "Weekdays","Cabancalan","09123456789",4.0f, R.drawable.jingliu, services2, 56, 64, 59));
+        allCleaners.add(new Cleaner("Cleaner 3", 35,"Female", "Expert deep cleaner with 10 years of experience", "Mon-Fri", "Talamban","09123456789",5.0f, R.drawable.jingliu, services3, 89, 76, 83));
+        allCleaners.add(new Cleaner("Cleaner 4", 28,"Male", "Certified babysitter", "MWF", "Guadalupe","09123456789",4.8f, R.drawable.jingliu, services4, 96, 67, 89));
+        allCleaners.add(new Cleaner("Cleaner 5", 30,"Male", "Certified babysitter", "TTH" , "Mabolo","09123456789",4.8f, R.drawable.jingliu, services4, 23, 34, 27));
+        allCleaners.add(new Cleaner("Cleaner 6", 21,"Male", "Certified babysitter","Mondays" , "Maguikay","09123456789",4.8f, R.drawable.jingliu, services4, 67, 45, 56));
+        allCleaners.add(new Cleaner("Cleaner 7", 43,"Male", "Certified babysitter", "Sundays", "SRP","09123456789",4.8f, R.drawable.jingliu, services4, 60, 50, 55));
+
+        allCleaners.sort((c1, c2) -> Float.compare(c2.getRating(), c1.getRating()));
     }
 
     private List<Cleaner> filterCleanersByCategory(String category) {

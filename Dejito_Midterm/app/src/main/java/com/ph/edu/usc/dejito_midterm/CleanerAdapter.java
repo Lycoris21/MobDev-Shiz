@@ -7,6 +7,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class CleanerAdapter extends RecyclerView.Adapter<CleanerAdapter.ViewHolder> {
@@ -33,7 +36,9 @@ public class CleanerAdapter extends RecyclerView.Adapter<CleanerAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Cleaner cleaner = cleaners.get(position);
         holder.cleanerName.setText(cleaner.getName());
-        holder.cleanerDetails.setText(cleaner.getDetails() + " | Rating: " + cleaner.getRating());
+        holder.cleanerAge.setText("Age: "+ String.valueOf(cleaner.getAge()));
+        holder.cleanerRating.setText("Rating: "+ String.format("%.1f", cleaner.getRating()));
+        holder.cleanerSched.setText("Availability: "+cleaner.getSchedule());
         holder.cleanerImage.setImageResource(cleaner.getImageResource());
         holder.itemView.setOnClickListener(v -> listener.onCleanerClick(cleaner));
     }
@@ -50,13 +55,17 @@ public class CleanerAdapter extends RecyclerView.Adapter<CleanerAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView cleanerName;
-        TextView cleanerDetails;
+        TextView cleanerAge;
+        TextView cleanerRating;
+        TextView cleanerSched;
         ImageView cleanerImage;
 
         ViewHolder(View itemView) {
             super(itemView);
             cleanerName = itemView.findViewById(R.id.cleanerName);
-            cleanerDetails = itemView.findViewById(R.id.cleanerDetails);
+            cleanerAge = itemView.findViewById(R.id.cleanerAge);
+            cleanerRating = itemView.findViewById(R.id.cleanerRating);
+            cleanerSched = itemView.findViewById(R.id.cleanerSched);
             cleanerImage = itemView.findViewById(R.id.cleanerImage);
         }
     }

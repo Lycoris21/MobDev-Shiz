@@ -24,8 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Book Service"
-            android:layout_gravity="center_vertical"
-            android:textAlignment="center"
+            android:gravity="center"
             android:textSize="30dp"
             android:textStyle="bold"
             android:layout_weight="1"
@@ -174,7 +173,7 @@
         android:layout_height="48dp"
         android:id="@+id/serviceDuration"
         android:layout_marginTop="10dp"
-        android:hint="Enter service duration..."
+        android:hint="Click to choose service duration..."
         />
 
     <LinearLayout
