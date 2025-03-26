@@ -11,6 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +28,9 @@ public class MainActivity extends AppCompatActivity {
     private CategoryAdapter categoryAdapter;
     private CleanerAdapter cleanerAdapter;
 
-    private List<Cleaner> allCleaners;
-    private List<Cleaner> filteredCleaners;
+    private List<Category> categoryList = new ArrayList<>();
+    private List<Cleaner> allCleaners = new ArrayList<>();
+    private List<Cleaner> filteredCleaners = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +42,52 @@ public class MainActivity extends AppCompatActivity {
         searchEditText = findViewById(R.id.search);
         LinearLayout moreCategories = findViewById(R.id.more);
 
-        initializeCleaners();
-
         recyclerViewCategories.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        List<Category> categoryList = new ArrayList<>();
-        categoryList.add(new Category("Cleaning Service", "Professional cleaning services for your home.", R.drawable.cleaning));
-        categoryList.add(new Category("Cleaning Appliance", "Services for cleaning appliances.", R.drawable.appliance));
-        categoryList.add(new Category("Babysitter", "Trusted babysitting services for your children.", R.drawable.babysitter));
+
+        JSONArray categoryArray;
+        JSONArray cleanerArray;
+
+        try {
+            JSONObject categoryObj = new JSONObject(loadJSONFromAsset("category_list.json"));
+            categoryArray = categoryObj.getJSONArray("categories");
+
+            for (int i = 0; i < categoryArray.length(); i++) {
+                JSONObject categoryDetail = categoryArray.getJSONObject(i);
+                categoryList.add(new Category(
+                        categoryDetail.getString("name"),
+                        categoryDetail.getString("description"),
+                        categoryDetail.getString("imageResource")
+                ));
+            }
+
+            JSONObject cleanerObj = new JSONObject(loadJSONFromAsset("cleaner_list.json"));
+            cleanerArray = cleanerObj.getJSONArray("cleaners");
+
+            for (int i = 0; i < cleanerArray.length(); i++) {
+                JSONObject cleanerDetail = cleanerArray.getJSONObject(i);
+                allCleaners.add(new Cleaner(
+                        cleanerDetail.getInt("id"),
+                        cleanerDetail.getString("name"),
+                        cleanerDetail.getInt("age"),
+                        cleanerDetail.getString("gender"),
+                        cleanerDetail.getString("details"),
+                        cleanerDetail.getString("sched"),
+                        cleanerDetail.getString("address"),
+                        cleanerDetail.getString("number"),
+                        (float) cleanerDetail.getDouble("rating"),
+                        cleanerDetail.getString("imageResource"),
+                        cleanerDetail.getInt("cleanRate"),
+                        cleanerDetail.getInt("attitudeRate"),
+                        cleanerDetail.getInt("satisfactionRate"),
+                        parseJSONArrayToList(cleanerDetail.getJSONArray("services"))
+                ));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        allCleaners.sort((c1, c2) -> Float.compare(c2.getRating(), c1.getRating()));
 
         categoryAdapter = new CategoryAdapter(categoryList, category -> {
             Intent intent = new Intent(MainActivity.this, CategorySelectionActivity.class);
@@ -53,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewTopCleaners.setLayoutManager(new LinearLayoutManager(this));
         cleanerAdapter = new CleanerAdapter(allCleaners, cleaner -> {
             Intent intent = new Intent(MainActivity.this, CleanerProfileActivity.class);
+            intent.putExtra("cleaner_id", cleaner.getId());
             intent.putExtra("cleaner_name", cleaner.getName());
             intent.putExtra("cleaner_age", cleaner.getAge());
             intent.putExtra("cleaner_gender", cleaner.getGender());
@@ -89,44 +136,41 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initializeCleaners() {
-        allCleaners = new ArrayList<>();
-
-        List<String> services1 = new ArrayList<>();
-        services1.add("Cleaning Service");
-        services1.add("Cleaning Appliance");
-
-        List<String> services2 = new ArrayList<>();
-        services2.add("Cleaning Service");
-        services2.add("Cleaning Appliance");
-        services2.add("Babysitter");
-
-        List<String> services3 = new ArrayList<>();
-        services3.add("Cleaning Service");
-        services3.add("Babysitter");
-
-        List<String> services4 = new ArrayList<>();
-        services4.add("Babysitter");
-
-        allCleaners.add(new Cleaner("Cleaner 1", 18,"Female", "Experienced in house cleaning", "Weekends","Mandaue","09123456789",4.5f, R.drawable.jingliu, services1, 40, 60, 50));
-        allCleaners.add(new Cleaner("Cleaner 2", 24,"Male", "Specializes in garden maintenance", "Weekdays","Cabancalan","09123456789",4.0f, R.drawable.jingliu, services2, 56, 64, 59));
-        allCleaners.add(new Cleaner("Cleaner 3", 35,"Female", "Expert plumber with 10 years of experience", "Mon-Fri", "Talamban","09123456789",5.0f, R.drawable.jingliu, services3, 89, 76, 83));
-        allCleaners.add(new Cleaner("Cleaner 4", 28,"Male", "Certified babysitter", "MWF", "Guadalupe","09123456789",4.8f, R.drawable.jingliu, services4, 96, 67, 89));
-        allCleaners.add(new Cleaner("Cleaner 5", 30,"Male", "Certified babysitter", "TTH" , "Mabolo","09123456789",4.8f, R.drawable.jingliu, services4, 23, 34, 27));
-        allCleaners.add(new Cleaner("Cleaner 6", 21,"Male", "Certified babysitter","Mondays" , "Maguikay","09123456789",4.8f, R.drawable.jingliu, services4, 67, 45, 56));
-        allCleaners.add(new Cleaner("Cleaner 7", 43,"Male", "Certified babysitter", "Sundays", "SRP","09123456789",4.8f, R.drawable.jingliu, services4, 60, 50, 55));
-
-        allCleaners.sort((c1, c2) -> Float.compare(c2.getRating(), c1.getRating()));
-    }
-
     private void filterCleaners(String query) {
-        filteredCleaners = new ArrayList<>();
+        if (query.isEmpty()) {
+            cleanerAdapter.updateList(allCleaners);
+            return;
+        }
+        filteredCleaners.clear();
         for (Cleaner cleaner : allCleaners) {
-            if (cleaner.getName().toLowerCase().contains(query.toLowerCase()) ||
-                    cleaner.getDetails().toLowerCase().contains(query.toLowerCase())) {
+            if (cleaner.getName().toLowerCase().contains(query.toLowerCase())) {
                 filteredCleaners.add(cleaner);
             }
         }
         cleanerAdapter.updateList(filteredCleaners);
+    }
+
+
+    private String loadJSONFromAsset(String filename) {
+        String json = null;
+        try {
+            InputStream is = getAssets().open(filename);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    private List<String> parseJSONArrayToList(JSONArray jsonArray) throws JSONException {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            list.add(jsonArray.getString(i));
+        }
+        return list;
     }
 }

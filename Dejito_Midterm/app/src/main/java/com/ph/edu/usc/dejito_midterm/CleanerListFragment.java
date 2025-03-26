@@ -9,13 +9,20 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CleanerListFragment extends Fragment {
 
-    private List<Cleaner> allCleaners;
-    private List<Cleaner> filteredCleaners;
+    private List<Cleaner> allCleaners = new ArrayList<>();
+    private List<Cleaner> filteredCleaners = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,7 +31,38 @@ public class CleanerListFragment extends Fragment {
         RecyclerView cleanerListView = view.findViewById(R.id.cleanerList);
         cleanerListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        initializeCleaners();
+
+        JSONArray cleanerArray;
+
+        try {
+            JSONObject cleanerObj = new JSONObject(loadJSONFromAsset("cleaner_list.json"));
+            cleanerArray = cleanerObj.getJSONArray("cleaners");
+
+            for (int i = 0; i < cleanerArray.length(); i++) {
+                JSONObject cleanerDetail = cleanerArray.getJSONObject(i);
+                allCleaners.add(new Cleaner(
+                        cleanerDetail.getInt("id"),
+                        cleanerDetail.getString("name"),
+                        cleanerDetail.getInt("age"),
+                        cleanerDetail.getString("gender"),
+                        cleanerDetail.getString("details"),
+                        cleanerDetail.getString("sched"),
+                        cleanerDetail.getString("address"),
+                        cleanerDetail.getString("number"),
+                        (float) cleanerDetail.getDouble("rating"),
+                        cleanerDetail.getString("imageResource"),
+                        cleanerDetail.getInt("cleanRate"),
+                        cleanerDetail.getInt("attitudeRate"),
+                        cleanerDetail.getInt("satisfactionRate"),
+                        parseJSONArrayToList(cleanerDetail.getJSONArray("services"))
+                ));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        allCleaners.sort((c1, c2) -> Float.compare(c2.getRating(), c1.getRating()));
 
         String selectedCategory = getArguments().getString("category");
 
@@ -32,6 +70,7 @@ public class CleanerListFragment extends Fragment {
 
         CleanerAdapter adapter = new CleanerAdapter(filteredCleaners, cleaner -> {
             Intent intent = new Intent(getActivity(), CleanerProfileActivity.class);
+            intent.putExtra("cleaner_id", cleaner.getId());
             intent.putExtra("cleaner_name", cleaner.getName());
             intent.putExtra("cleaner_age", cleaner.getAge());
             intent.putExtra("cleaner_gender", cleaner.getGender());
@@ -72,15 +111,6 @@ public class CleanerListFragment extends Fragment {
         List<String> services4 = new ArrayList<>();
         services4.add("Babysitter");
 
-        allCleaners.add(new Cleaner("Cleaner 1", 18,"Female", "Experienced in house cleaning", "Weekends","Mandaue","09123456789",4.5f, R.drawable.jingliu, services1, 40, 60, 50));
-        allCleaners.add(new Cleaner("Cleaner 2", 24,"Male", "Specializes in garden maintenance", "Weekdays","Cabancalan","09123456789",4.0f, R.drawable.jingliu, services2, 56, 64, 59));
-        allCleaners.add(new Cleaner("Cleaner 3", 35,"Female", "Expert deep cleaner with 10 years of experience", "Mon-Fri", "Talamban","09123456789",5.0f, R.drawable.jingliu, services3, 89, 76, 83));
-        allCleaners.add(new Cleaner("Cleaner 4", 28,"Male", "Certified babysitter", "MWF", "Guadalupe","09123456789",4.8f, R.drawable.jingliu, services4, 96, 67, 89));
-        allCleaners.add(new Cleaner("Cleaner 5", 30,"Male", "Certified babysitter", "TTH" , "Mabolo","09123456789",4.8f, R.drawable.jingliu, services4, 23, 34, 27));
-        allCleaners.add(new Cleaner("Cleaner 6", 21,"Male", "Certified babysitter","Mondays" , "Maguikay","09123456789",4.8f, R.drawable.jingliu, services4, 67, 45, 56));
-        allCleaners.add(new Cleaner("Cleaner 7", 43,"Male", "Certified babysitter", "Sundays", "SRP","09123456789",4.8f, R.drawable.jingliu, services4, 60, 50, 55));
-
-        allCleaners.sort((c1, c2) -> Float.compare(c2.getRating(), c1.getRating()));
     }
 
     private List<Cleaner> filterCleanersByCategory(String category) {
@@ -93,5 +123,28 @@ public class CleanerListFragment extends Fragment {
         }
         Log.d("CleanerListFragment", "Filtered cleaners count: " + filtered.size());
         return filtered;
+    }
+
+    private String loadJSONFromAsset(String filename) {
+        String json = null;
+        try {
+            InputStream is = getActivity().getAssets().open(filename);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    private List<String> parseJSONArrayToList(JSONArray jsonArray) throws JSONException {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            list.add(jsonArray.getString(i));
+        }
+        return list;
     }
 }

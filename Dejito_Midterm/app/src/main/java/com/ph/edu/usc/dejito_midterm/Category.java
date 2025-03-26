@@ -3,9 +3,9 @@ package com.ph.edu.usc.dejito_midterm;
 public class Category {
     private String name;
     private String description;
-    private int imageResource;
+    private String imageResource;
 
-    public Category(String name, String description, int imageResource) {
+    public Category(String name, String description, String imageResource) {
         this.name = name;
         this.description = description;
         this.imageResource = imageResource;
@@ -20,6 +20,6 @@ public class Category {
     }
 
     public int getImageResource() {
-        return imageResource;
+        return App.getContext().getResources().getIdentifier(imageResource, "drawable", App.getContext().getPackageName());
     }
 }

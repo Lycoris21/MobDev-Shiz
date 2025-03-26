@@ -1,0 +1,19 @@
+  {
+    "categories": [
+      {
+        "name": "Babysitter",
+        "description": "Trusted babysitting services for your children.",
+        "imageResource": "babysitter"
+      },
+      {
+        "name": "Cleaning Appliance",
+        "description": "Services for cleaning appliances.",
+        "imageResource": "appliance"
+      },
+      {
+        "name": "Cleaning Service",
+        "description": "Professional cleaning services for your home.",
+        "imageResource": "cleaning"
+      }
+  ]
+}

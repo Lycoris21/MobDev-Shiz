@@ -1,0 +1,76 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Xianne Sapphire",
+      "phone": "09615910990",
+      "email": "xiannesapphire@gmail.com",
+      "gender": "Female",
+      "contact": {
+        "phone": "09123456789",
+        "office": "09963258741",
+        "home": "099876543214"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Zyme Jeon",
+      "phone": "09615910990",
+      "email": "zymejeon@gmail.com",
+      "gender": "Female",
+      "contact": {
+        "phone": "09123456789",
+        "office": "09789654123",
+        "home": "099876543214"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Sesshomaru",
+      "phone": "09615910990",
+      "email": "sesshomarusama@gmail.com",
+      "gender": "Male",
+      "contact": {
+        "phone": "09123456789",
+        "office": "09123654789",
+        "home": "099876543214"
+      }
+    },
+    {
+      "id": "4",
+      "name": "Byakuya",
+      "phone": "09615910990",
+      "email": "byakuyasama@gmail.com",
+      "gender": "Male",
+      "contact": {
+        "phone": "09123456789",
+        "office": "09123654789",
+        "home": "099876543214"
+      }
+    },
+    {
+      "id": "5",
+      "name": "Toshiro",
+      "phone": "09615910990",
+      "email": "bigtoshiro@gmail.com",
+      "gender": "Male",
+      "contact": {
+        "phone": "09123456789",
+        "office": "09123654789",
+        "home": "099876543214"
+      }
+    },
+    {
+      "id": "5",
+      "name": "Toshiro",
+      "phone": "09615910990",
+      "email": "bigtoshiro@gmail.com",
+      "gender": "Male",
+      "contact": {
+        "phone": "09123456789",
+        "office": "09123654789",
+        "home": "099876543214"
+      }
+    }
+  ]
+}
