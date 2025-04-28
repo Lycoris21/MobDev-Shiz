@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Dejito_2ndHalf"
         tools:targetApi="31">
         <activity
+            android:name=".SQLAppActivity"
+            android:exported="true" />
+        <activity
             android:name=".JSONParserActivity"
             android:exported="true" />
         <activity
